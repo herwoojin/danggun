@@ -1,14 +1,14 @@
 
 import React from 'react';
 import { HashRouter, Routes, Route } from 'react-router-dom';
-import HomeScreen from './screens/HomeScreen';
-import ApplyScreen from './screens/ApplyScreen';
-import TrackingScreen from './screens/TrackingScreen';
-import DriverConsoleScreen from './screens/DriverConsoleScreen';
-import ReviewScreen from './screens/ReviewScreen';
+import HomeScreen from './screens/HomeScreen.tsx';
+import ApplyScreen from './screens/ApplyScreen.tsx';
+import TrackingScreen from './screens/TrackingScreen.tsx';
+import DriverConsoleScreen from './screens/DriverConsoleScreen.tsx';
+import ReviewScreen from './screens/ReviewScreen.tsx';
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <div className="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden mx-auto max-w-md bg-background-light dark:bg-background-dark shadow-2xl transition-colors duration-200 font-display text-text-main-light dark:text-text-main-dark">
+  <div className="relative flex h-full min-h-screen w-full flex-col overflow-x-hidden mx-auto max-w-md bg-background-light dark:bg-background-dark shadow-2xl transition-colors duration-200 font-display text-text-main-light dark:text-text-main-dark">
     {children}
   </div>
 );
