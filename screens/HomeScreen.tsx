@@ -7,12 +7,10 @@ const HomeScreen: React.FC = () => {
   const [showPopup, setShowPopup] = useState(false);
 
   useEffect(() => {
-    // Check if the user has opted to hide the popup today
     const hideUntilDate = localStorage.getItem('hide_delivery_popup_date');
     const today = new Date().toISOString().split('T')[0];
 
     if (hideUntilDate !== today) {
-      // Small delay for a better UX transition
       const timer = setTimeout(() => setShowPopup(true), 500);
       return () => clearTimeout(timer);
     }
@@ -34,56 +32,73 @@ const HomeScreen: React.FC = () => {
       {showPopup && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div 
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300"
+            className="absolute inset-0 bg-black/70 backdrop-blur-sm transition-opacity duration-300"
             onClick={closePopup}
           ></div>
-          <div className="relative w-full max-w-[340px] bg-white dark:bg-surface-dark rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
-            {/* Popup Image */}
-            <div className="relative aspect-[16/10] w-full overflow-hidden bg-gray-100">
-              <img 
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCKsVtyJD6IfJnrAD2xkLh0_uFZvoMmhEApA0LA7oUVD8-maLKZ8qouYiK-NbRwsPzKkcQDFKpktHrDuvvE-wQFpUCmFVhghz4bbMV52cyPptE6rVNiXRx2IafNYlTsr2oWPzUUYee-Y9lUU27I7bDJq0yaKP8SBpEqghwulaaMMw_CU_S8zoSlYY8yg61rG5kNdOIMYTo71cjl78n6sTJJUNqVsBVqHJkCO341h34GZxhowNAa7sYIdxYdAa35Yvs_HqL7o14aCkR5" 
-                alt="Promotion" 
-                className="hidden" // Just to have a reference if needed
-              />
-              {/* Using a custom visual representation of the provided image since we need high fidelity */}
-              <div className="w-full h-full bg-white flex flex-col items-center justify-center p-4 text-center">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-2xl">🚗</span>
-                  <h4 className="text-lg font-bold text-gray-900">직접 가면 5,000원?</h4>
-                  <span className="text-2xl">🛵</span>
-                  <h4 className="text-lg font-bold text-gray-900">맡기면 3,500원!</h4>
-                </div>
-                <div className="flex justify-between w-full gap-4 mt-2">
-                  <div className="flex-1 flex flex-col items-center">
-                    <p className="text-[10px] text-gray-500 font-bold mb-1">내가 직접 갈 때 😰</p>
-                    <div className="text-2xl mb-1">🚗💨</div>
-                    <span className="bg-red-500 text-white text-[10px] px-3 py-1 rounded-full font-bold">5,000원</span>
+          <div className="relative w-full max-w-[360px] bg-white dark:bg-surface-dark rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300 border border-white/10">
+            {/* Visual Header based on user image */}
+            <div className="bg-white p-6 pb-4">
+              <h2 className="text-[22px] font-black text-center text-gray-900 leading-tight">
+                🚗 직접 가면 5,000원? 🛵 맡기면 3,500원!
+              </h2>
+              
+              <div className="mt-8 flex justify-between relative">
+                {/* Vertical Divider */}
+                <div className="absolute left-1/2 top-0 bottom-0 w-px bg-gray-100 -translate-x-1/2"></div>
+                
+                {/* Left side: Direct */}
+                <div className="flex-1 flex flex-col items-center gap-2">
+                  <p className="text-sm font-bold text-gray-800">내가 직접 갈 때 😰</p>
+                  <div className="relative">
+                    <span className="text-4xl">🚗</span>
+                    <span className="absolute -top-1 -right-1 text-xl">😰</span>
                   </div>
-                  <div className="w-px bg-gray-100 my-2"></div>
-                  <div className="flex-1 flex flex-col items-center">
-                    <p className="text-[10px] text-gray-500 font-bold mb-1">우리에게 맡길 때 😎</p>
-                    <div className="text-2xl mb-1">🛵✨</div>
-                    <span className="bg-green-500 text-white text-[10px] px-3 py-1 rounded-full font-bold">3,500원</span>
+                  <div className="bg-red-500 text-white px-4 py-1.5 rounded-full font-black text-lg shadow-sm">
+                    5,000원
                   </div>
+                  <p className="text-[10px] text-gray-400 mt-1 leading-tight text-center px-2">
+                    왕복 5km, 20분 운전 시 기름값, 시간 등 최소 5,000원의 비용이 발생해요.
+                  </p>
                 </div>
-                <div className="mt-4 border-2 border-black rounded-full px-4 py-1.5 inline-flex items-center gap-1">
-                  <span className="text-red-500 font-bold">1,500원</span>
-                  <span className="font-bold">오히려 절약! 🥳</span>
+
+                {/* Right side: Delivery */}
+                <div className="flex-1 flex flex-col items-center gap-2">
+                  <p className="text-sm font-bold text-gray-800">우리에게 맡길 때 😎</p>
+                  <div className="relative">
+                    <span className="text-4xl">🛵</span>
+                    <span className="absolute -top-1 -right-1 text-xl">😎</span>
+                  </div>
+                  <div className="bg-green-500 text-white px-4 py-1.5 rounded-full font-black text-lg shadow-sm">
+                    3,500원
+                  </div>
+                  <p className="text-[10px] text-gray-400 mt-1 leading-tight text-center px-2">
+                    집에서 편하게!<br/>배달 비용은 단 3,500원이에요.
+                  </p>
                 </div>
+              </div>
+
+              <div className="mt-8 flex flex-col items-center">
+                <div className="border-[3px] border-black rounded-full px-6 py-2 flex items-center gap-2 bg-white shadow-sm">
+                  <span className="text-red-500 font-black text-xl italic">1,500원</span>
+                  <span className="font-black text-xl italic">오히려 절약! 🥳</span>
+                </div>
+                <p className="text-[11px] text-gray-500 mt-3 font-medium">
+                  배달시키고 남는 돈으로 커피 한 잔의 여유를 즐기세요.
+                </p>
               </div>
             </div>
 
             {/* Popup Footer */}
-            <div className="flex border-t border-gray-100 dark:border-gray-800">
+            <div className="flex bg-gray-50 dark:bg-black/20 border-t border-gray-100 dark:border-gray-800">
               <button 
                 onClick={handleDontShowToday}
-                className="flex-1 py-4 text-sm font-medium text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors border-r border-gray-100 dark:border-gray-800"
+                className="flex-1 py-4 text-sm font-medium text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors border-r border-gray-100 dark:border-gray-800"
               >
                 오늘은 보지 않기
               </button>
               <button 
                 onClick={closePopup}
-                className="flex-1 py-4 text-sm font-bold text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
+                className="flex-1 py-4 text-sm font-bold text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
               >
                 닫기
               </button>
@@ -120,7 +135,7 @@ const HomeScreen: React.FC = () => {
         <div className="relative w-full aspect-video rounded-xl overflow-hidden shadow-sm group">
           <div 
             className="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-105" 
-            style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuAltBxMSGKrI5i_uKwYf-0yJHk1PGtSjZ9luJpJh0rDNyl292SUlV3p-fVH6sWkSjPMtyGUMT2Bg-5-ept0x4UZXcuLv3vQa2CuJTh3xELNa4XTcG-jSGQacogxe_A9boRg1v-B-pPENFXqkO0oSfpxCkD6H2bCxvIAI8pd4g4xYVgz9IVCtDBS4_5ALq8ZHun33dO2lSg09fK_kntYKhwBMTMt7Nfq6D468h0Iy5oLM4XR5-abkWgvQwaadPsxBNx-CmR1xkwCDim6')" }}
+            style={{ backgroundImage: "url('https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&q=80&w=800')" }}
           >
             <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
           </div>
@@ -159,12 +174,12 @@ const HomeScreen: React.FC = () => {
         </div>
       </div>
 
-      {/* Comparison */}
+      {/* Comparison Area in Main Feed */}
       <div className="px-4 pb-2">
         <div className="bg-white dark:bg-surface-dark rounded-xl p-5 shadow-sm border border-gray-100 dark:border-gray-800">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="font-bold text-lg dark:text-white">비용 비교</h3>
-            <span className="text-xs font-medium text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">vs 택시/자차</span>
+            <h3 className="font-bold text-lg dark:text-white">직접 가는 것보다 저렴해요</h3>
+            <span className="text-xs font-medium text-primary bg-primary/10 px-2 py-1 rounded">인기</span>
           </div>
           <div className="flex items-center gap-3 mb-4 opacity-60">
             <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center shrink-0">
@@ -197,15 +212,14 @@ const HomeScreen: React.FC = () => {
         </div>
       </div>
 
-      {/* Horizontal Guide */}
+      {/* Guide */}
       <div className="py-6">
         <div className="px-4 flex justify-between items-end mb-3">
           <h3 className="text-lg font-bold text-text-main-light dark:text-white">이용 가이드</h3>
-          <span className="text-sm text-primary font-medium cursor-pointer">전체 보기</span>
         </div>
         <div className="flex overflow-x-auto gap-3 px-4 pb-2 hide-scrollbar">
           {[
-            { icon: 'scale', title: '최대 8kg', sub: '한 손 운반 가능' },
+            { icon: 'scale', title: '최대 8kg', sub: '한 손 운반' },
             { icon: 'chair', title: '가구 제외', sub: '승용차 적재' },
             { icon: 'door_front', title: '문 앞 배송', sub: '비대면 전달' },
             { icon: 'package_2', title: '포장 필수', sub: '파손 주의' },
@@ -226,10 +240,6 @@ const HomeScreen: React.FC = () => {
           <span>배송 신청하기</span>
           <span className="material-symbols-outlined">arrow_forward</span>
         </Link>
-        <div className="text-center mt-2 flex items-center justify-center gap-1.5 opacity-60">
-          <span className="material-symbols-outlined text-primary text-sm">verified_user</span>
-          <span className="text-xs font-medium text-gray-500 dark:text-gray-400">이웃 10,000명 이상이 이용했어요</span>
-        </div>
       </div>
     </div>
   );
