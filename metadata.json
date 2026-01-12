@@ -1,0 +1,8 @@
+{
+  "name": "Danggeun Delivery (당근배송)",
+  "description": "A high-fidelity neighborhood delivery service prototype inspired by Karrot (Danggeun Market), featuring order tracking, driver console, and AI-powered delivery instructions.",
+  "requestFramePermissions": [
+    "camera",
+    "geolocation"
+  ]
+}
