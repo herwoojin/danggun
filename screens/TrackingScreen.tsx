@@ -1,9 +1,24 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getSupportAnswer } from '../services/geminiService';
 
 const TrackingScreen: React.FC = () => {
   const navigate = useNavigate();
+  const [showAI, setShowAI] = useState(false);
+  const [question, setQuestion] = useState('');
+  const [answer, setAnswer] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleAskAI = async () => {
+    if (!question || isLoading) return;
+    setIsLoading(true);
+    setAnswer('');
+    const context = "배송 상태: 배달 중, 남은 시간: 12분, 물품: 빈티지 램프, 기사: 김민수(4.9점)";
+    const res = await getSupportAnswer(question, context);
+    setAnswer(res);
+    setIsLoading(false);
+  };
 
   return (
     <div className="flex flex-col h-screen overflow-hidden">
@@ -13,8 +28,8 @@ const TrackingScreen: React.FC = () => {
           <span className="material-symbols-outlined">arrow_back</span>
         </button>
         <div className="flex gap-2 pointer-events-auto">
-          <button onClick={() => navigate('/driver')} className="flex size-10 items-center justify-center rounded-full bg-white/90 dark:bg-black/60 shadow-sm backdrop-blur-sm text-neutral-900 dark:text-white hover:bg-white dark:hover:bg-black transition-colors">
-            <span className="material-symbols-outlined">help</span>
+          <button onClick={() => setShowAI(true)} className="flex size-10 items-center justify-center rounded-full bg-white/90 dark:bg-black/60 shadow-sm backdrop-blur-sm text-primary hover:bg-white dark:hover:bg-black transition-colors">
+            <span className="material-symbols-outlined material-symbols-filled">psychology</span>
           </button>
         </div>
       </div>
@@ -37,9 +52,6 @@ const TrackingScreen: React.FC = () => {
               <span className="material-symbols-outlined text-[18px] text-red-500 material-symbols-filled">location_on</span>
             </div>
           </div>
-          <svg className="absolute inset-0 w-full h-full z-0 drop-shadow-md" style={{ pointerEvents: 'none' }}>
-            <path d="M 170 180 Q 220 150 280 120" fill="none" stroke="#fa8a2e" strokeDasharray="8 4" strokeLinecap="round" strokeWidth="4"></path>
-          </svg>
         </div>
       </div>
 
@@ -81,7 +93,6 @@ const TrackingScreen: React.FC = () => {
         {/* Timeline */}
         <div className="flex-1 px-6 py-6 overflow-y-auto hide-scrollbar">
           <div className="grid grid-cols-[32px_1fr] gap-x-4 h-full pb-20">
-            {/* Step 1: Done */}
             <div className="flex flex-col items-center">
               <div className="size-8 rounded-full bg-primary/20 flex items-center justify-center z-10">
                 <span className="material-symbols-outlined text-primary text-[18px]">check</span>
@@ -93,10 +104,8 @@ const TrackingScreen: React.FC = () => {
                 <p className="text-neutral-900 dark:text-gray-100 text-base font-semibold leading-none">판매자 준비 완료</p>
                 <span className="text-xs text-gray-400 dark:text-gray-500 font-mono">14:30</span>
               </div>
-              <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">물품 확인 및 포장 완료</p>
             </div>
 
-            {/* Step 2: Active */}
             <div className="flex flex-col items-center">
               <div className="relative size-8 flex items-center justify-center z-10">
                 <div className="absolute inset-0 bg-primary/30 rounded-full animate-ping opacity-75"></div>
@@ -109,20 +118,7 @@ const TrackingScreen: React.FC = () => {
             <div className="flex flex-col justify-start pb-8 pt-1">
               <div className="flex justify-between items-start">
                 <p className="text-primary text-lg font-bold leading-none">배달 중</p>
-                <span className="bg-primary/10 text-primary text-xs font-bold px-2 py-0.5 rounded-full">15:02 도착 예정</span>
               </div>
-              <p className="text-neutral-700 dark:text-gray-300 text-sm mt-1">기사가 배송지로 이동 중</p>
-            </div>
-
-            {/* Step 3: Pending */}
-            <div className="flex flex-col items-center">
-              <div className="size-8 rounded-full bg-gray-100 dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 flex items-center justify-center z-10">
-                <span className="material-symbols-outlined text-gray-400 dark:text-gray-500 text-[18px]">flag</span>
-              </div>
-            </div>
-            <div className="flex flex-col justify-start pt-1">
-              <p className="text-gray-400 dark:text-gray-500 text-base font-medium leading-none">배달 완료</p>
-              <p className="text-gray-400 dark:text-gray-600 text-sm mt-1">배달 대기 중</p>
             </div>
           </div>
         </div>
@@ -139,6 +135,62 @@ const TrackingScreen: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* AI Assistant Modal */}
+      {showAI && (
+        <div className="fixed inset-0 z-50 flex flex-col justify-end">
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setShowAI(false)}></div>
+          <div className="relative bg-white dark:bg-surface-dark rounded-t-3xl p-6 shadow-2xl animate-in slide-in-from-bottom duration-300 max-w-md mx-auto w-full">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                  <span className="material-symbols-outlined text-primary">psychology</span>
+                </div>
+                <div>
+                  <h3 className="font-bold text-lg dark:text-white">AI 배송 비서</h3>
+                  <p className="text-xs text-gray-500">궁금한 점을 물어보세요</p>
+                </div>
+              </div>
+              <button onClick={() => setShowAI(false)} className="text-gray-400">
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+
+            <div className="mb-6">
+              <div className="flex gap-2 flex-wrap mb-4">
+                {["언제 도착해요?", "기사님 친절한가요?", "비가 오는데 괜찮을까요?"].map((q) => (
+                  <button 
+                    key={q} 
+                    onClick={() => setQuestion(q)}
+                    className="text-xs bg-gray-100 dark:bg-gray-800 px-3 py-1.5 rounded-full hover:bg-primary/10 hover:text-primary transition-colors"
+                  >
+                    {q}
+                  </button>
+                ))}
+              </div>
+              <div className="flex items-center gap-2 bg-gray-50 dark:bg-gray-800 rounded-xl px-4 py-3 border border-gray-100 dark:border-gray-700">
+                <input 
+                  value={question}
+                  onChange={(e) => setQuestion(e.target.value)}
+                  placeholder="질문을 입력하세요..."
+                  className="bg-transparent border-0 flex-1 text-sm focus:ring-0 dark:text-white"
+                  onKeyDown={(e) => e.key === 'Enter' && handleAskAI()}
+                />
+                <button onClick={handleAskAI} disabled={isLoading} className="text-primary disabled:opacity-50">
+                  <span className="material-symbols-outlined">{isLoading ? 'sync' : 'send'}</span>
+                </button>
+              </div>
+            </div>
+
+            {answer && (
+              <div className="bg-primary/5 border border-primary/10 rounded-2xl p-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                <p className="text-sm leading-relaxed text-gray-800 dark:text-gray-200">{answer}</p>
+              </div>
+            )}
+            <div className="h-4"></div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -1,14 +1,31 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DeliveryMode } from '../types';
-import { optimizeDeliveryNote } from '../services/geminiService';
+import { optimizeDeliveryNote, analyzeItemSafety } from '../services/geminiService';
 
 const ApplyScreen: React.FC = () => {
   const navigate = useNavigate();
   const [deliveryMode, setDeliveryMode] = useState<DeliveryMode>('fast');
   const [note, setNote] = useState('');
+  const [safetyTip, setSafetyTip] = useState('');
   const [isOptimizing, setIsOptimizing] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+
+  // Debounced safety analysis
+  useEffect(() => {
+    const timer = setTimeout(async () => {
+      if (note.length > 3) {
+        setIsAnalyzing(true);
+        const tip = await analyzeItemSafety(note);
+        setSafetyTip(tip);
+        setIsAnalyzing(false);
+      } else {
+        setSafetyTip('');
+      }
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [note]);
 
   const handleOptimize = async () => {
     if (!note) return;
@@ -129,7 +146,7 @@ const ApplyScreen: React.FC = () => {
         {/* Smart Note (AI Integration) */}
         <div className="mb-6">
           <label className="text-sm font-semibold text-text-main-light dark:text-white ml-2 mb-3 block flex items-center justify-between">
-            배송 요청사항
+            물품명 및 요청사항
             <button 
               onClick={handleOptimize} 
               disabled={isOptimizing || !note}
@@ -139,15 +156,26 @@ const ApplyScreen: React.FC = () => {
               AI 다듬기
             </button>
           </label>
-          <div className="bg-surface-light dark:bg-surface-dark p-3 rounded-xl border border-border-light dark:border-border-dark">
+          <div className="bg-surface-light dark:bg-surface-dark p-3 rounded-xl border border-border-light dark:border-border-dark relative">
             <textarea 
               value={note}
               onChange={(e) => setNote(e.target.value)}
               className="w-full bg-transparent border-0 resize-none p-0 text-sm focus:ring-0 text-text-main-light dark:text-white placeholder:text-text-sub-light/40" 
-              placeholder="예: 문 앞에 놔주세요. 벨은 누르지 마세요."
+              placeholder="예: 빈티지 램프, 문 앞에 놔주세요."
               rows={2}
             />
+            {isAnalyzing && (
+              <div className="absolute right-3 bottom-3 animate-pulse">
+                <span className="material-symbols-outlined text-primary text-sm">psychology</span>
+              </div>
+            )}
           </div>
+          {safetyTip && (
+            <div className="mt-2 flex items-center gap-2 px-3 py-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg animate-in slide-in-from-top-1 duration-300">
+              <span className="material-symbols-outlined text-blue-500 text-sm">info</span>
+              <p className="text-xs font-semibold text-blue-600 dark:text-blue-400">AI 팁: {safetyTip}</p>
+            </div>
+          )}
         </div>
 
         {/* Payer Selection */}
